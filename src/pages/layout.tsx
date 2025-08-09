@@ -1,4 +1,5 @@
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, IconButton, Text } from "@chakra-ui/react";
+import { LuGithub } from "react-icons/lu";
 import { NavLink, Outlet } from "react-router";
 import { AnimatedBox } from "../ui/components/animated-box";
 import { ColorModeButton } from "../ui/components/color-mode";
@@ -28,8 +29,14 @@ export function Layout() {
         <Flex as="nav" ml="auto" gap={4} alignItems="center">
           <NavLink to="/">{({ isActive }) => <NavLinkText isActive={isActive}>Diff</NavLinkText>}</NavLink>
           <NavLink to="/sync">{({ isActive }) => <NavLinkText isActive={isActive}>Sync</NavLinkText>}</NavLink>
-
-          <ColorModeButton />
+          <Flex gap={2}>
+            <IconButton asChild variant="ghost" aria-label="github link">
+              <a href="https://github.com/rqbazan/json-diff-ts-playground" target="_blank" rel="noopener noreferrer">
+                <LuGithub />
+              </a>
+            </IconButton>
+            <ColorModeButton />
+          </Flex>
         </Flex>
       </Flex>
 
