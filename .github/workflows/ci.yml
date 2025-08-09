@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⌛ Setup CI
+        uses: variableland/gh-actions/actions/setup-pnpm@99f0fcbd1dc28e6e528ff9f64da3f56b92044306
+
+      - name: 💅 Test static
+        run: |
+          pnpm rr check
+          pnpm rr tsc
+
+      # - name: 🧪 Test unit
+      #   run: bun run test
+
+  
