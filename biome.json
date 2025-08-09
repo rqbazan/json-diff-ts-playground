@@ -1,0 +1,3 @@
+{
+  "extends": ["@vlandoss/biome-config"]
+}
