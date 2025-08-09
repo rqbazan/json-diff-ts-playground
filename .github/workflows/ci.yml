@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⌛ Setup CI
-        uses: variableland/gh-actions/actions/setup-pnpm-bun@6ea44c72abb44276a7facc955947e9a72b798ace
+        uses: variableland/gh-actions/actions/setup-pnpm-bun@main
 
       - name: 💅 Test static
         run: |
