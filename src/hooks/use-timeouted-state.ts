@@ -11,6 +11,7 @@ export function useTimeoutedState<T>(initialValue: T, timeout: number = 700) {
 
     setValue(newValue);
 
+    // @ts-expect-error I don't want to refer nodejs types in frontend
     timerId.current = setTimeout(() => {
       setValue(initialValue);
     }, timeout);
