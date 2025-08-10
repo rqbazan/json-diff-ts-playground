@@ -1,16 +1,19 @@
-import { Box, Button, Field, Fieldset, Flex, Input, Separator, Stack } from "@chakra-ui/react";
+import { Box, Button, Field, Fieldset, Flex, HStack, IconButton, Separator, Stack } from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { HiCheck } from "react-icons/hi2";
+import { LuInfo } from "react-icons/lu";
 import { useEditorState } from "../hooks/use-editor-state";
 import { useTimeoutedState } from "../hooks/use-timeouted-state";
 import { jsonDiff } from "../lib/json-diff";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "../samples";
 import { CodeBlock } from "../ui/components/code-block";
 import { JsonEditor } from "../ui/components/json-editor";
+import { MultiInput } from "../ui/components/multi-input";
 import { SectionHeading } from "../ui/components/section-heading";
 import * as Select from "../ui/components/select";
 import { Switch } from "../ui/components/switch";
+import { TabularInput } from "../ui/components/tabular-input";
 import { toaster } from "../ui/components/toaster";
 import { texts } from "../ui/wording";
 import { fromJSON, toJSON } from "../utils/functions";
@@ -111,8 +114,9 @@ export function DiffPage() {
       <Flex flex={1}>
         <Flex direction="column" h="full" w="30%" borderRight="2px" borderColor="gray.800">
           <SectionHeading title={texts["diff.config.title"]} description={texts["diff.config.description"]} />
-          <Stack flex={1}>
-            <Stack flex={1}>
+
+          <Box flex={1} position="relative">
+            <Box position="absolute" inset={0} overflow="auto">
               <Select.SelectRoot
                 p={3}
                 collection={sampleCollection}
@@ -134,15 +138,38 @@ export function DiffPage() {
 
               <Separator />
 
-              <Fieldset.Root p={3}>
-                <Stack>
-                  <Fieldset.Legend fontSize="md">Options</Fieldset.Legend>
-                </Stack>
+              <Fieldset.Root p={3} size="lg">
+                <HStack w="full">
+                  <Stack gap={0}>
+                    <Fieldset.Legend>Options</Fieldset.Legend>
+                    <Fieldset.HelperText display="flex" gap={1} alignItems="center">
+                      Diff algorithm options
+                      <IconButton asChild variant="ghost" size="2xs" rounded="full">
+                        <a
+                          href="https://github.com/ltwlf/json-diff-ts/blob/95865cbdd641cb74616f3bdefe6667eb94c58a9e/README.md#options-interface"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <LuInfo />
+                        </a>
+                      </IconButton>
+                    </Fieldset.HelperText>
+                  </Stack>
+                  <Stack ml="auto">
+                    <Switch />
+                  </Stack>
+                </HStack>
 
-                <Fieldset.Content>
+                <Fieldset.Content mt={4}>
                   <Field.Root>
                     <Field.Label>Keys to skip</Field.Label>
-                    <Input placeholder="some.nested.key" />
+                    <MultiInput placeholder="some.nested.key" />
+                  </Field.Root>
+
+                  <Field.Root>
+                    <Field.Label>Embedded object keys</Field.Label>
+
+                    <TabularInput defaultValue={{ key: "", id: "" }} />
                   </Field.Root>
 
                   <Field.Root>
@@ -152,15 +179,15 @@ export function DiffPage() {
                   </Field.Root>
                 </Fieldset.Content>
               </Fieldset.Root>
-            </Stack>
+            </Box>
+          </Box>
 
-            <Separator />
+          <Separator />
 
-            <Stack mt="auto" px={3} py={2}>
-              <Button size="sm" onClick={onExecuteDiffClick}>
-                {diffExecuted && <HiCheck />} Execute Diff
-              </Button>
-            </Stack>
+          <Stack mt="auto" p={3}>
+            <Button size="sm" onClick={onExecuteDiffClick}>
+              {diffExecuted && <HiCheck />} Execute Diff
+            </Button>
           </Stack>
         </Flex>
 
