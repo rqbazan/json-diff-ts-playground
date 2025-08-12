@@ -1,22 +1,19 @@
-import { Box, Button, Field, Fieldset, Flex, HStack, IconButton, Separator, Stack } from "@chakra-ui/react";
+import { Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { HiCheck } from "react-icons/hi2";
-import { LuInfo } from "react-icons/lu";
-import { useEditorState } from "../hooks/use-editor-state";
-import { useTimeoutedState } from "../hooks/use-timeouted-state";
-import { jsonDiff } from "../lib/json-diff";
-import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "../samples";
-import { CodeBlock } from "../ui/components/code-block";
-import { JsonEditor } from "../ui/components/json-editor";
-import { MultiInput } from "../ui/components/multi-input";
-import { SectionHeading } from "../ui/components/section-heading";
-import * as Select from "../ui/components/select";
-import { Switch } from "../ui/components/switch";
-import { TabularInput } from "../ui/components/tabular-input";
-import { toaster } from "../ui/components/toaster";
-import { texts } from "../ui/wording";
-import { fromJSON, toJSON } from "../utils/functions";
+import { useEditorState } from "../../hooks/use-editor-state";
+import { useTimeoutedState } from "../../hooks/use-timeouted-state";
+import { jsonDiff } from "../../lib/json-diff";
+import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "../../samples";
+import { CodeBlock } from "../../ui/components/code-block";
+import { JsonEditor } from "../../ui/components/json-editor";
+import { SectionHeading } from "../../ui/components/section-heading";
+import * as Select from "../../ui/components/select";
+import { toaster } from "../../ui/components/toaster";
+import { texts } from "../../ui/wording";
+import { fromJSON, toJSON } from "../../utils/functions";
+import { OptionsForm, type OptionsFormProps } from "./options-form";
 
 export function DiffPage() {
   const [diffExecuted, setDiffExecuted] = useTimeoutedState(false);
@@ -61,7 +58,9 @@ export function DiffPage() {
     executeDiff(sourceString, targetString);
   }
 
-  function onExecuteDiffClick() {
+  const onExecuteIntent: OptionsFormProps["onSubmit"] = (formInputs) => {
+    console.log({ formInputs });
+
     if (!sourceEditorState.isValid) {
       toaster.create({
         title: "Invalid Source JSON",
@@ -83,7 +82,7 @@ export function DiffPage() {
     executeDiff(sourceEditorState.value, targetEditorState.value);
 
     setDiffExecuted(true);
-  }
+  };
 
   return (
     <Flex direction="column" flex={1}>
@@ -138,54 +137,14 @@ export function DiffPage() {
 
               <Separator />
 
-              <Fieldset.Root p={3} size="lg">
-                <HStack w="full">
-                  <Stack gap={0}>
-                    <Fieldset.Legend>Options</Fieldset.Legend>
-                    <Fieldset.HelperText display="flex" gap={1} alignItems="center">
-                      Diff algorithm options
-                      <IconButton asChild variant="ghost" size="2xs" rounded="full">
-                        <a
-                          href="https://github.com/ltwlf/json-diff-ts/blob/95865cbdd641cb74616f3bdefe6667eb94c58a9e/README.md#options-interface"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <LuInfo />
-                        </a>
-                      </IconButton>
-                    </Fieldset.HelperText>
-                  </Stack>
-                  <Stack ml="auto">
-                    <Switch />
-                  </Stack>
-                </HStack>
-
-                <Fieldset.Content mt={4}>
-                  <Field.Root>
-                    <Field.Label>Keys to skip</Field.Label>
-                    <MultiInput placeholder="some.nested.key" />
-                  </Field.Root>
-
-                  <Field.Root>
-                    <Field.Label>Embedded object keys</Field.Label>
-
-                    <TabularInput defaultValue={{ key: "", id: "" }} />
-                  </Field.Root>
-
-                  <Field.Root>
-                    <Switch>
-                      <Field.Label>Treat type change as replace</Field.Label>
-                    </Switch>
-                  </Field.Root>
-                </Fieldset.Content>
-              </Fieldset.Root>
+              <OptionsForm id="diff-options-form" onSubmit={onExecuteIntent} />
             </Box>
           </Box>
 
           <Separator />
 
           <Stack mt="auto" p={3}>
-            <Button size="sm" onClick={onExecuteDiffClick}>
+            <Button size="sm" form="diff-options-form" type="submit">
               {diffExecuted && <HiCheck />} Execute Diff
             </Button>
           </Stack>
