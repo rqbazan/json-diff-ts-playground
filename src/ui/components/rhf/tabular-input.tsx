@@ -1,5 +1,5 @@
 import { Button, IconButton, Input, Stack, Table } from "@chakra-ui/react";
-import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import { Controller, useController, useFieldArray, useFormContext } from "react-hook-form";
 import { LuPlus } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import type { ControlledComponentProps, OptionalFieldValues } from "./types";
@@ -15,6 +15,11 @@ type RHFTabularInputProps<T extends OptionalFieldValues> = ControlledComponentPr
 
 export function RHFTabularInput<T extends OptionalFieldValues>({ name, columns }: RHFTabularInputProps<T>) {
   const { control } = useFormContext();
+
+  const { field } = useController({
+    name,
+    control,
+  });
 
   const { fields, append, remove } = useFieldArray<OptionalFieldValues>({
     name,
@@ -35,11 +40,11 @@ export function RHFTabularInput<T extends OptionalFieldValues>({ name, columns }
             </Table.Header>
 
             <Table.Body borderWidth={0}>
-              {fields.map((field, index) => {
+              {fields.map((arrayField, index) => {
                 const columnKeys = columns.map((col) => col.key);
 
                 return (
-                  <Table.Row key={field.id}>
+                  <Table.Row key={arrayField.id}>
                     {columnKeys.map((columnKey) => (
                       <Table.Cell key={columnKey}>
                         <Controller
@@ -50,7 +55,7 @@ export function RHFTabularInput<T extends OptionalFieldValues>({ name, columns }
                       </Table.Cell>
                     ))}
                     <Table.Cell textAlign="end">
-                      <IconButton size="xs" variant="outline" onClick={() => remove(index)}>
+                      <IconButton size="xs" variant="outline" onClick={() => remove(index)} disabled={field.disabled}>
                         <RiDeleteBin6Line />
                       </IconButton>
                     </Table.Cell>
@@ -66,6 +71,7 @@ export function RHFTabularInput<T extends OptionalFieldValues>({ name, columns }
         size="2xs"
         w="fit-content"
         variant="surface"
+        disabled={field.disabled}
         onClick={() => {
           const defaultAddedObj = Object.fromEntries(columns.map((col) => [col.key, ""]));
           append(defaultAddedObj);

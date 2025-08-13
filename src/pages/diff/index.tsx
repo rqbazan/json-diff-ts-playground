@@ -1,10 +1,11 @@
 import { Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
+import { FormProvider, type SubmitHandler, useForm } from "react-hook-form";
 import { HiCheck } from "react-icons/hi2";
 import { useEditorState } from "../../hooks/use-editor-state";
 import { useTimeoutedState } from "../../hooks/use-timeouted-state";
-import { jsonDiff } from "../../lib/json-diff";
+import { type DiffOptions, jsonDiff } from "../../lib/json-diff";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "../../samples";
 import { CodeBlock } from "../../ui/components/code-block";
 import { JsonEditor } from "../../ui/components/json-editor";
@@ -13,7 +14,23 @@ import * as Select from "../../ui/components/select";
 import { toaster } from "../../ui/components/toaster";
 import { texts } from "../../ui/wording";
 import { fromJSON, toJSON } from "../../utils/functions";
-import { OptionsForm, type OptionsFormProps } from "./options-form";
+import { OptionsFieldset, type OptionsFormInputs } from "./options-fieldset";
+
+function convertToDiffOptions(formInputs: OptionsFormInputs): DiffOptions {
+  return {
+    keysToSkip: formInputs.keysToSkip?.map((item) => item.value) ?? [],
+    embeddedObjKeys: Object.fromEntries(formInputs.embeddedObjKeys?.map((item) => [item.key, item.id]) ?? []),
+    treatTypeChangeAsReplace: formInputs.treatTypeChangeAsReplace ?? false,
+  };
+}
+
+function convertToOptionsFormInputs(options: DiffOptions): OptionsFormInputs {
+  return {
+    keysToSkip: options.keysToSkip?.map((item) => ({ value: item })) ?? [],
+    embeddedObjKeys: Object.entries(options.embeddedObjKeys ?? []).map(([key, id]) => ({ key, id })),
+    treatTypeChangeAsReplace: options.treatTypeChangeAsReplace ?? false,
+  };
+}
 
 export function DiffPage() {
   const [diffExecuted, setDiffExecuted] = useTimeoutedState(false);
@@ -35,8 +52,15 @@ export function DiffPage() {
     return toJSON(diff);
   });
 
-  function executeDiff(sourceString: string, targetString: string) {
-    const diff = jsonDiff(fromJSON(sourceString), fromJSON(targetString));
+  const [enabledOptions, setEnableOptions] = useState(initialSample?.diffOptions !== undefined);
+
+  const optionsForm = useForm<OptionsFormInputs>({
+    disabled: !enabledOptions,
+    values: initialSample?.diffOptions ? convertToOptionsFormInputs(initialSample.diffOptions) : {},
+  });
+
+  function executeDiff(sourceString: string, targetString: string, options: DiffOptions | undefined) {
+    const diff = jsonDiff(fromJSON(sourceString), fromJSON(targetString), options);
 
     setChangesString(toJSON(diff));
   }
@@ -50,16 +74,24 @@ export function DiffPage() {
     setSelectedSamplesId(selection);
 
     const selectedSample = samples[selection[0] as SampleId];
-    const { sourceString, targetString } = selectedSample;
+    const { sourceString, targetString, diffOptions } = selectedSample;
 
     sourceEditorState.setValue(sourceString);
     targetEditorState.setValue(targetString);
 
-    executeDiff(sourceString, targetString);
+    executeDiff(sourceString, targetString, diffOptions);
+
+    if (diffOptions) {
+      optionsForm.reset(convertToOptionsFormInputs(diffOptions));
+      setEnableOptions(true);
+    } else {
+      optionsForm.reset();
+      setEnableOptions(false);
+    }
   }
 
-  const onExecuteIntent: OptionsFormProps["onSubmit"] = (formInputs) => {
-    console.log({ formInputs });
+  const onExecuteIntent: SubmitHandler<OptionsFormInputs> = (formInputs) => {
+    const diffOptions = convertToDiffOptions(formInputs);
 
     if (!sourceEditorState.isValid) {
       toaster.create({
@@ -79,7 +111,7 @@ export function DiffPage() {
       return;
     }
 
-    executeDiff(sourceEditorState.value, targetEditorState.value);
+    executeDiff(sourceEditorState.value, targetEditorState.value, diffOptions);
 
     setDiffExecuted(true);
   };
@@ -137,7 +169,11 @@ export function DiffPage() {
 
               <Separator />
 
-              <OptionsForm id="diff-options-form" onSubmit={onExecuteIntent} />
+              <FormProvider {...optionsForm}>
+                <form id="diff-options-form" onSubmit={optionsForm.handleSubmit(onExecuteIntent)}>
+                  <OptionsFieldset enabled={enabledOptions} onEnabledChange={setEnableOptions} />
+                </form>
+              </FormProvider>
             </Box>
           </Box>
 
