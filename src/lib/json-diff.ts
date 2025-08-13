@@ -2,6 +2,7 @@ import { applyChangeset, atomizeChangeset, diff, type IAtomicChange, type Option
 
 export type JsonType = string | number | boolean | object | JsonType[] | null;
 
+export type DiffOptions = Options;
 /**
  * Generates a difference set for JSON objects. When comparing arrays, if a specific key is provided,
  * differences are determined by matching elements via this key rather than array indices.
