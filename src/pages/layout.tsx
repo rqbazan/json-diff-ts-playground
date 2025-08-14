@@ -1,8 +1,8 @@
 import { Box, Flex, Heading, IconButton, Text } from "@chakra-ui/react";
 import { LuGithub } from "react-icons/lu";
 import { NavLink, Outlet } from "react-router";
-import { AnimatedBox } from "../ui/components/animated-box";
-import { ColorModeButton } from "../ui/components/color-mode";
+import { AnimatedBox } from "#/ui/components/animated-box";
+import { ColorModeButton } from "#/ui/components/color-mode";
 
 function NavLinkText({ isActive, children }: { isActive: boolean; children: React.ReactNode }) {
   return (

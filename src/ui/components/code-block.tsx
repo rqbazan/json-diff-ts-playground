@@ -1,6 +1,6 @@
 import { createShikiAdapter, Float, CodeBlock as HeadlessCodeBlock, IconButton } from "@chakra-ui/react";
 import { useMemo } from "react";
-import { DARK_THEME, LIGHT_THEME, loadShikiHighlighter, type SupportedLanguage } from "../../lib/shiki";
+import { DARK_THEME, LIGHT_THEME, loadShikiHighlighter, type SupportedLanguage } from "#/lib/shiki";
 import { useColorMode } from "./color-mode";
 
 type CodeBlockProps = {

@@ -1,5 +1,5 @@
-import type { DiffOptions } from "../lib/json-diff";
-import { toJSON } from "../utils/functions";
+import type { DiffOptions } from "#/lib/json-diff";
+import { toJSON } from "#/utils/json-functions";
 
 type CreateSampleConfig = {
   source: object;
