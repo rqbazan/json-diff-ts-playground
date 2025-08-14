@@ -3,17 +3,17 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { FormProvider, type SubmitHandler, useForm } from "react-hook-form";
 import { HiCheck } from "react-icons/hi2";
-import { useEditorState } from "../../hooks/use-editor-state";
-import { useTimeoutedState } from "../../hooks/use-timeouted-state";
-import { type DiffOptions, jsonDiff } from "../../lib/json-diff";
-import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "../../samples";
-import { CodeBlock } from "../../ui/components/code-block";
-import { JsonEditor } from "../../ui/components/json-editor";
-import { SectionHeading } from "../../ui/components/section-heading";
-import * as Select from "../../ui/components/select";
-import { toaster } from "../../ui/components/toaster";
-import { texts } from "../../ui/wording";
-import { fromJSON, toJSON } from "../../utils/functions";
+import { useJsonEditorState } from "#/hooks/use-json-editor-state";
+import { useTimeoutedState } from "#/hooks/use-timeouted-state";
+import { type DiffOptions, jsonDiff } from "#/lib/json-diff";
+import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
+import { CodeBlock } from "#/ui/components/code-block";
+import { JsonEditor } from "#/ui/components/json-editor";
+import { SectionHeading } from "#/ui/components/section-heading";
+import * as Select from "#/ui/components/select";
+import { toaster } from "#/ui/components/toaster";
+import { texts } from "#/ui/wording";
+import { fromJSON, toJSON } from "#/utils/json-functions";
 import { OptionsFieldset, type OptionsFormInputs } from "./options-fieldset";
 
 function convertToDiffOptions(formInputs: OptionsFormInputs): DiffOptions {
@@ -43,8 +43,8 @@ export function DiffPage() {
     return selectedSampleId ? samples[selectedSampleId as SampleId] : undefined;
   }, [selectedSampleId]);
 
-  const sourceEditorState = useEditorState("diff_source_editor", initialSample?.sourceString);
-  const targetEditorState = useEditorState("diff_target_editor", initialSample?.targetString);
+  const sourceEditorState = useJsonEditorState("diff_source_editor", initialSample?.sourceString);
+  const targetEditorState = useJsonEditorState("diff_target_editor", initialSample?.targetString);
 
   const [changesString, setChangesString] = useState(() => {
     const diff = jsonDiff(fromJSON(sourceEditorState.value), fromJSON(targetEditorState.value));
@@ -65,7 +65,7 @@ export function DiffPage() {
     setChangesString(toJSON(diff));
   }
 
-  function onEditorChange(editorState: ReturnType<typeof useEditorState>, value: string | undefined) {
+  function onEditorChange(editorState: ReturnType<typeof useJsonEditorState>, value: string | undefined) {
     editorState.setValue(value ?? "");
     setSelectedSamplesId([]);
   }

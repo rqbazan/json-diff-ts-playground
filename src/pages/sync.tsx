@@ -2,17 +2,17 @@ import { Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { HiCheck } from "react-icons/hi2";
-import { useEditorState } from "../hooks/use-editor-state";
-import { useTimeoutedState } from "../hooks/use-timeouted-state";
-import { jsonDiff, jsonSync } from "../lib/json-diff";
-import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "../samples";
-import { CodeBlock } from "../ui/components/code-block";
-import { JsonEditor } from "../ui/components/json-editor";
-import { SectionHeading } from "../ui/components/section-heading";
-import * as Select from "../ui/components/select";
-import { toaster } from "../ui/components/toaster";
-import { texts } from "../ui/wording";
-import { fromJSON, toJSON } from "../utils/functions";
+import { useJsonEditorState } from "#/hooks/use-json-editor-state";
+import { useTimeoutedState } from "#/hooks/use-timeouted-state";
+import { jsonDiff, jsonSync } from "#/lib/json-diff";
+import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
+import { CodeBlock } from "#/ui/components/code-block";
+import { JsonEditor } from "#/ui/components/json-editor";
+import { SectionHeading } from "#/ui/components/section-heading";
+import * as Select from "#/ui/components/select";
+import { toaster } from "#/ui/components/toaster";
+import { texts } from "#/ui/wording";
+import { fromJSON, toJSON } from "#/utils/json-functions";
 
 export function SyncPage() {
   const [syncExecuted, setSyncExecuted] = useTimeoutedState(false);
@@ -33,8 +33,8 @@ export function SyncPage() {
     }
   }, [initialSample]);
 
-  const sourceEditorState = useEditorState("sync_source_editor", initialSample?.sourceString);
-  const changesEditorState = useEditorState("sync_changes_editor", initialChangesString);
+  const sourceEditorState = useJsonEditorState("sync_source_editor", initialSample?.sourceString);
+  const changesEditorState = useJsonEditorState("sync_changes_editor", initialChangesString);
 
   const [targetString, setTargetString] = useState(() => {
     try {
@@ -63,7 +63,7 @@ export function SyncPage() {
     }
   }
 
-  function onEditorChange(editorState: ReturnType<typeof useEditorState>, value: string | undefined) {
+  function onEditorChange(editorState: ReturnType<typeof useJsonEditorState>, value: string | undefined) {
     editorState.setValue(value ?? "");
     setSelectedSamplesId([]);
   }
