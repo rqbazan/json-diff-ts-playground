@@ -1,4 +1,4 @@
-import { Button, IconButton, Input, Stack, Table } from "@chakra-ui/react";
+import { Button, Field, IconButton, Input, Stack, Table } from "@chakra-ui/react";
 import { Controller, useController, useFieldArray, useFormContext } from "react-hook-form";
 import { LuPlus } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -7,6 +7,7 @@ import type { ControlledComponentProps, OptionalFieldValues } from "./types";
 type Column = {
   key: string;
   title: string;
+  required?: boolean;
 };
 
 type RHFTabularInputProps<T extends OptionalFieldValues> = ControlledComponentProps<T> & {
@@ -41,21 +42,35 @@ export function RHFTabularInput<T extends OptionalFieldValues>({ name, columns }
 
             <Table.Body borderWidth={0}>
               {fields.map((arrayField, index) => {
-                const columnKeys = columns.map((col) => col.key);
-
                 return (
                   <Table.Row key={arrayField.id}>
-                    {columnKeys.map((columnKey) => (
-                      <Table.Cell key={columnKey}>
+                    {columns.map((column) => (
+                      <Table.Cell key={column.key} verticalAlign="top">
                         <Controller
-                          render={({ field }) => <Input size="xs" {...field} />}
-                          name={`${name}.${index}.${columnKey}`}
+                          render={({ field, fieldState }) => {
+                            return (
+                              <Field.Root invalid={fieldState.invalid}>
+                                <Input size="xs" {...field} />
+                                {fieldState.error?.message && (
+                                  <Field.ErrorText fontSize="xs">{fieldState.error?.message}</Field.ErrorText>
+                                )}
+                              </Field.Root>
+                            );
+                          }}
+                          name={`${name}.${index}.${column.key}`}
                           control={control}
+                          rules={{ required: column.required ? "Required" : undefined }}
                         />
                       </Table.Cell>
                     ))}
-                    <Table.Cell textAlign="end">
-                      <IconButton size="xs" variant="outline" onClick={() => remove(index)} disabled={field.disabled}>
+                    <Table.Cell textAlign="end" verticalAlign="top">
+                      <IconButton
+                        colorPalette="red"
+                        size="xs"
+                        variant="outline"
+                        onClick={() => remove(index)}
+                        disabled={field.disabled}
+                      >
                         <RiDeleteBin6Line />
                       </IconButton>
                     </Table.Cell>

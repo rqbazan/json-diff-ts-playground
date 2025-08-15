@@ -6,6 +6,7 @@ import { HiCheck } from "react-icons/hi2";
 import { useJsonEditorState } from "#/hooks/use-json-editor-state";
 import { useTimeoutedState } from "#/hooks/use-timeouted-state";
 import { type DiffOptions, jsonDiff } from "#/lib/json-diff";
+import { createRHFPersist } from "#/lib/rhf-persist";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
 import { CodeBlock } from "#/ui/components/code-block";
 import { JsonEditor } from "#/ui/components/json-editor";
@@ -15,6 +16,8 @@ import { toaster } from "#/ui/components/toaster";
 import { texts } from "#/ui/wording";
 import { fromJSON, toJSON } from "#/utils/json-functions";
 import { OptionsFieldset, type OptionsFormInputs } from "./options-fieldset";
+
+const { useRHFRestore, RHFPersist } = createRHFPersist<OptionsFormInputs>({ persistKey: "diff_form_options" });
 
 function convertToDiffOptions(formInputs: OptionsFormInputs): DiffOptions {
   return {
@@ -32,6 +35,27 @@ function convertToOptionsFormInputs(options: DiffOptions): OptionsFormInputs {
   };
 }
 
+function getDefaultOptionsFormInputs(): OptionsFormInputs {
+  return {
+    keysToSkip: [],
+    embeddedObjKeys: [],
+    treatTypeChangeAsReplace: false,
+  };
+}
+
+function hasRestoredValues(values: Record<string, unknown>): boolean {
+  const keysToSkip = values.keysToSkip as string[] | undefined;
+  const embeddedObjKeys = values.embeddedObjKeys as Record<string, string> | undefined;
+  const treatTypeChangeAsReplace = values.treatTypeChangeAsReplace as boolean | undefined;
+
+  return treatTypeChangeAsReplace !== undefined || (keysToSkip?.length ?? 0) > 0 || Object.keys(embeddedObjKeys ?? {}).length > 0;
+}
+
+function getDiffString(sourceString: string, targetString: string, options: DiffOptions | undefined) {
+  const diff = jsonDiff(fromJSON(sourceString), fromJSON(targetString), options);
+  return toJSON(diff);
+}
+
 export function DiffPage() {
   const [diffExecuted, setDiffExecuted] = useTimeoutedState(false);
 
@@ -46,23 +70,35 @@ export function DiffPage() {
   const sourceEditorState = useJsonEditorState("diff_source_editor", initialSample?.sourceString);
   const targetEditorState = useJsonEditorState("diff_target_editor", initialSample?.targetString);
 
-  const [changesString, setChangesString] = useState(() => {
-    const diff = jsonDiff(fromJSON(sourceEditorState.value), fromJSON(targetEditorState.value));
+  const restoredValues = useRHFRestore();
 
-    return toJSON(diff);
-  });
+  const [enabledDiffOptions, setEnableDiffOptions] = useLocalStorage<boolean>(
+    "diff_enabled_options",
+    initialSample?.diffOptions !== undefined || hasRestoredValues(restoredValues),
+  );
 
-  const [enabledOptions, setEnableOptions] = useState(initialSample?.diffOptions !== undefined);
+  const defaultValues = initialSample?.diffOptions
+    ? convertToOptionsFormInputs(initialSample.diffOptions)
+    : restoredValues
+      ? restoredValues
+      : getDefaultOptionsFormInputs();
 
   const optionsForm = useForm<OptionsFormInputs>({
-    disabled: !enabledOptions,
-    values: initialSample?.diffOptions ? convertToOptionsFormInputs(initialSample.diffOptions) : {},
+    disabled: !enabledDiffOptions,
+    defaultValues: defaultValues,
+    // shouldUseNativeValidation: true,
+  });
+
+  const [changesString, setChangesString] = useState(() => {
+    return getDiffString(
+      sourceEditorState.value,
+      targetEditorState.value,
+      enabledDiffOptions ? convertToDiffOptions(defaultValues) : undefined,
+    );
   });
 
   function executeDiff(sourceString: string, targetString: string, options: DiffOptions | undefined) {
-    const diff = jsonDiff(fromJSON(sourceString), fromJSON(targetString), options);
-
-    setChangesString(toJSON(diff));
+    setChangesString(getDiffString(sourceString, targetString, options));
   }
 
   function onEditorChange(editorState: ReturnType<typeof useJsonEditorState>, value: string | undefined) {
@@ -83,10 +119,10 @@ export function DiffPage() {
 
     if (diffOptions) {
       optionsForm.reset(convertToOptionsFormInputs(diffOptions));
-      setEnableOptions(true);
+      setEnableDiffOptions(true);
     } else {
-      optionsForm.reset();
-      setEnableOptions(false);
+      optionsForm.reset(getDefaultOptionsFormInputs());
+      setEnableDiffOptions(false);
     }
   }
 
@@ -171,7 +207,8 @@ export function DiffPage() {
 
               <FormProvider {...optionsForm}>
                 <form id="diff-options-form" onSubmit={optionsForm.handleSubmit(onExecuteIntent)}>
-                  <OptionsFieldset enabled={enabledOptions} onEnabledChange={setEnableOptions} />
+                  <OptionsFieldset enabled={enabledDiffOptions} onEnabledChange={setEnableDiffOptions} />
+                  <RHFPersist />
                 </form>
               </FormProvider>
             </Box>
