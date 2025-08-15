@@ -5,6 +5,7 @@ import { HiCheck } from "react-icons/hi2";
 import { useJsonEditorState } from "#/hooks/use-json-editor-state";
 import { useTimeoutedState } from "#/hooks/use-timeouted-state";
 import { jsonDiff, jsonSync } from "#/lib/json-diff";
+import { useNProgressBar } from "#/lib/nprogress";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
 import { CodeBlock } from "#/ui/components/code-block";
 import { JsonEditor } from "#/ui/components/json-editor";
@@ -14,8 +15,15 @@ import { toaster } from "#/ui/components/toaster";
 import { texts } from "#/ui/wording";
 import { fromJSON, toJSON } from "#/utils/json-functions";
 
+const LOADING_TIMEOUTED_IN_MILLIS = 700;
+
 export function SyncPage() {
-  const [syncExecuted, setSyncExecuted] = useTimeoutedState(false);
+  const nProgressBar = useNProgressBar({
+    parent: "#sync-output-box",
+    delayedTimeout: LOADING_TIMEOUTED_IN_MILLIS,
+  });
+
+  const [syncExecuted, setSyncExecuted] = useTimeoutedState(false, LOADING_TIMEOUTED_IN_MILLIS);
 
   const [selectedSamplesId, setSelectedSamplesId] = useLocalStorage<string[]>("sync_selected_samples", [SAMPLE_ID.SIMPLE]);
 
@@ -106,6 +114,8 @@ export function SyncPage() {
     executeSync(sourceEditorState.value, changesEditorState.value);
 
     setSyncExecuted(true);
+
+    nProgressBar.delayed();
   }
 
   return (
@@ -180,7 +190,7 @@ export function SyncPage() {
           <SectionHeading title={texts["diff.target.title"]} description={texts["diff.target.description"]} />
 
           <Box flex={1} position="relative">
-            <Box position="absolute" inset={0} overflow="auto">
+            <Box position="absolute" inset={0} overflow="auto" id="sync-output-box">
               <CodeBlock lang="json" code={targetString} />
             </Box>
           </Box>

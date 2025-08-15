@@ -6,6 +6,7 @@ import { HiCheck } from "react-icons/hi2";
 import { useJsonEditorState } from "#/hooks/use-json-editor-state";
 import { useTimeoutedState } from "#/hooks/use-timeouted-state";
 import { type DiffOptions, jsonDiff } from "#/lib/json-diff";
+import { useNProgressBar } from "#/lib/nprogress";
 import { createRHFPersist } from "#/lib/rhf-persist";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
 import { CodeBlock } from "#/ui/components/code-block";
@@ -16,6 +17,8 @@ import { toaster } from "#/ui/components/toaster";
 import { texts } from "#/ui/wording";
 import { fromJSON, toJSON } from "#/utils/json-functions";
 import { OptionsFieldset, type OptionsFormInputs } from "./options-fieldset";
+
+const LOADING_TIMEOUTED_IN_MILLIS = 700;
 
 const { useRHFRestore, RHFPersist } = createRHFPersist<OptionsFormInputs>({ persistKey: "diff_form_options" });
 
@@ -57,7 +60,12 @@ function getDiffString(sourceString: string, targetString: string, options: Diff
 }
 
 export function DiffPage() {
-  const [diffExecuted, setDiffExecuted] = useTimeoutedState(false);
+  const nProgressBar = useNProgressBar({
+    parent: "#diff-output-box",
+    delayedTimeout: LOADING_TIMEOUTED_IN_MILLIS,
+  });
+
+  const [diffExecuted, setDiffExecuted] = useTimeoutedState(false, LOADING_TIMEOUTED_IN_MILLIS);
 
   const [selectedSamplesId, setSelectedSamplesId] = useLocalStorage<string[]>("diff_selected_samples", [SAMPLE_ID.SIMPLE]);
 
@@ -150,6 +158,8 @@ export function DiffPage() {
     executeDiff(sourceEditorState.value, targetEditorState.value, diffOptions);
 
     setDiffExecuted(true);
+
+    nProgressBar.delayed();
   };
 
   return (
@@ -236,7 +246,7 @@ export function DiffPage() {
           <SectionHeading title={texts["diff.output.title"]} description={texts["diff.output.description"]} />
 
           <Box flex={1} position="relative">
-            <Box position="absolute" inset={0} overflow="auto">
+            <Box position="absolute" inset={0} overflow="auto" id="diff-output-box">
               <CodeBlock lang="json" code={changesString} />
             </Box>
           </Box>
