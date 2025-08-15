@@ -217,7 +217,14 @@ export function DiffPage() {
           <Separator />
 
           <Stack mt="auto" p={3}>
-            <Button size="sm" form="diff-options-form" type="submit">
+            <Button
+              size="sm"
+              form="diff-options-form"
+              type="submit"
+              bgColor="green.400"
+              color="black"
+              _dark={{ bgColor: "blue.700", color: "white" }}
+            >
               {diffExecuted && <HiCheck />} Execute Diff
             </Button>
           </Stack>
