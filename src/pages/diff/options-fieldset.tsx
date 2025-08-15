@@ -43,7 +43,7 @@ export function OptionsFieldset({ enabled, onEnabledChange }: OptionsFieldsetPro
       <Fieldset.Content mt={4}>
         <Field.Root>
           <Field.Label>Keys to skip</Field.Label>
-          <RHFMultiInput name="keysToSkip" placeholder="some.nested.key" />
+          <RHFMultiInput name="keysToSkip" placeholder="some.nested.key" required />
         </Field.Root>
 
         <Field.Root>
@@ -52,8 +52,8 @@ export function OptionsFieldset({ enabled, onEnabledChange }: OptionsFieldsetPro
           <RHFTabularInput
             name="embeddedObjKeys"
             columns={[
-              { key: "key", title: "Key" },
-              { key: "id", title: "ID" },
+              { key: "key", title: "Key", required: true },
+              { key: "id", title: "ID", required: true },
             ]}
           />
         </Field.Root>

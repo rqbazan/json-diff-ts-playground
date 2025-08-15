@@ -161,7 +161,13 @@ export function SyncPage() {
             <Separator />
 
             <Stack mt="auto" px={3} py={2}>
-              <Button size="sm" onClick={onExecuteSyncClick}>
+              <Button
+                size="sm"
+                onClick={onExecuteSyncClick}
+                bgColor="green.400"
+                color="black"
+                _dark={{ bgColor: "blue.700", color: "white" }}
+              >
                 {syncExecuted && <HiCheck />} Execute Sync
               </Button>
             </Stack>
