@@ -1,4 +1,5 @@
 import "@fontsource-variable/jetbrains-mono/index.css";
+import "./ui/globals.css";
 import { ChakraProvider, ClientOnly } from "@chakra-ui/react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";

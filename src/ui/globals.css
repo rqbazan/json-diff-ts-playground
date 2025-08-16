@@ -1,0 +1,7 @@
+html {
+  --nprogress-background: var(--chakra-colors-green-500);
+}
+
+html.dark {
+  --nprogress-background: var(--chakra-colors-blue-500);
+}

@@ -51,8 +51,8 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       nprogress:
-        specifier: npm:@rqbazan/nprogress
-        version: '@rqbazan/nprogress@0.0.1'
+        specifier: npm:@rqbazan/nprogress@0.0.2
+        version: '@rqbazan/nprogress@0.0.2'
       react:
         specifier: ^19.1.0
         version: 19.1.1
@@ -1179,8 +1179,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@rqbazan/nprogress@0.0.1':
-    resolution: {integrity: sha512-D6DQMNFtWII3IWDfPYBzLlNv/EVZ6Mh+Syb6HQXWfznkrBIeN4tIL3kux9eDKKBLkRAjerUB90S2cvBoLoLNbg==}
+  '@rqbazan/nprogress@0.0.2':
+    resolution: {integrity: sha512-9Gc68bpLxJAQxsjFxRsNps4DV4OMzFT817TwDUi06UAcXi57QekLPnKLJI3q4JKcgp2ZR4c6dhjkMd7CeSTFkQ==}
 
   '@rushstack/worker-pool@0.4.9':
     resolution: {integrity: sha512-ibAOeQCuz3g0c88GGawAPO2LVOTZE3uPh4DCEJILZS9SEv9opEUObsovC18EHPgeIuFy4HkoJT+t7l8LURZjIw==}
@@ -5059,7 +5059,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.46.2':
     optional: true
 
-  '@rqbazan/nprogress@0.0.1': {}
+  '@rqbazan/nprogress@0.0.2': {}
 
   '@rushstack/worker-pool@0.4.9(@types/node@24.2.1)':
     optionalDependencies:
