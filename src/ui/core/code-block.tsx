@@ -28,6 +28,7 @@ export function CodeBlock({ code, lang }: CodeBlockProps) {
         language={lang}
         meta={{ showLineNumbers: true, colorScheme: colorMode }}
         borderRadius={0}
+        border={0}
         minH="full"
       >
         <HeadlessCodeBlock.Content>
