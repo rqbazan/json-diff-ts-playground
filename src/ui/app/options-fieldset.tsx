@@ -1,9 +1,9 @@
 import { Field, Fieldset, HStack, IconButton, Stack } from "@chakra-ui/react";
 import { LuInfo } from "react-icons/lu";
-import { RHFMultiInput } from "#/ui/components/rhf/multi-input";
-import { RHFSwitch } from "#/ui/components/rhf/switch";
-import { RHFTabularInput } from "#/ui/components/rhf/tabular-input";
-import { Switch } from "#/ui/components/switch";
+import { Switch } from "#/ui/core/switch";
+import { RHFMultiInput } from "#/ui/rhf/rhf-multi-input";
+import { RHFSwitch } from "#/ui/rhf/rhf-switch";
+import { RHFTabularInput } from "#/ui/rhf/rhf-tabular-input";
 
 export type OptionsFieldsetProps = {
   enabled: boolean;

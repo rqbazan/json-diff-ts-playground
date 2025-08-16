@@ -1,6 +1,6 @@
 import { Field } from "@chakra-ui/react";
 import { useController } from "react-hook-form";
-import { Switch } from "../switch";
+import { Switch } from "#/ui/core/switch";
 import type { ControlledComponentProps, OptionalFieldValues } from "./types";
 
 export type RHFSwitchProps<T extends OptionalFieldValues> = ControlledComponentProps<T>;

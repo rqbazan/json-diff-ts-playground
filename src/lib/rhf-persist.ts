@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useEffect } from "react";
 import { useWatch } from "react-hook-form";
-import type { OptionalFieldValues } from "#/ui/components/rhf/types";
+import type { OptionalFieldValues } from "#/ui/rhf/types";
 
 type RHFPersistProps = {
   persistKey: string;
