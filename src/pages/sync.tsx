@@ -3,27 +3,18 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { HiCheck } from "react-icons/hi2";
 import { useJsonEditorState } from "#/hooks/use-json-editor-state";
-import { useTimeoutedState } from "#/hooks/use-timeouted-state";
 import { jsonDiff, jsonSync } from "#/lib/json-diff";
-import { useNProgressBar } from "#/lib/nprogress";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
 import { JsonEditor } from "#/ui/app/json-editor";
+import { OutputBox } from "#/ui/app/output-box";
 import { SectionHeading } from "#/ui/app/section-heading";
-import { CodeBlock } from "#/ui/core/code-block";
 import * as Select from "#/ui/core/select";
 import { toaster } from "#/ui/toaster";
 import { texts } from "#/ui/wording";
 import { fromJSON, toJSON } from "#/utils/json-functions";
 
-const LOADING_TIMEOUTED_IN_MILLIS = 700;
-
 export function SyncPage() {
-  const nProgressBar = useNProgressBar({
-    parent: "#sync-output-box",
-    delayedTimeout: LOADING_TIMEOUTED_IN_MILLIS,
-  });
-
-  const [syncExecuted, setSyncExecuted] = useTimeoutedState(false, LOADING_TIMEOUTED_IN_MILLIS);
+  const [syncExecuted, setSyncExecuted] = useState(false);
 
   const [selectedSamplesId, setSelectedSamplesId] = useLocalStorage<string[]>("sync_selected_samples", [SAMPLE_ID.SIMPLE]);
 
@@ -71,12 +62,24 @@ export function SyncPage() {
     }
   }
 
+  async function executeSyncAsync(sourceString: string, changes: string) {
+    try {
+      setSyncExecuted(true);
+      await new Promise((resolve) => setTimeout(resolve, 100)); // simulate async operation
+      executeSync(sourceString, changes);
+    } catch (error) {
+      console.error("Can't execute sync successfully", error);
+    } finally {
+      setSyncExecuted(false);
+    }
+  }
+
   function onEditorChange(editorState: ReturnType<typeof useJsonEditorState>, value: string | undefined) {
     editorState.setValue(value ?? "");
     setSelectedSamplesId([]);
   }
 
-  function onSampleSelectionChange(selection: string[]) {
+  async function onSampleSelectionChange(selection: string[]) {
     setSelectedSamplesId(selection);
 
     const selectedSample = samples[selection[0] as SampleId];
@@ -89,10 +92,10 @@ export function SyncPage() {
 
     changesEditorState.setValue(changesString);
 
-    executeSync(selectedSample.sourceString, changesString);
+    await executeSyncAsync(selectedSample.sourceString, changesString);
   }
 
-  function onExecuteSyncClick() {
+  async function onExecuteSyncClick() {
     if (!sourceEditorState.isValid) {
       toaster.create({
         title: "Invalid Source JSON",
@@ -111,11 +114,7 @@ export function SyncPage() {
       return;
     }
 
-    executeSync(sourceEditorState.value, changesEditorState.value);
-
-    setSyncExecuted(true);
-
-    nProgressBar.delayed();
+    await executeSyncAsync(sourceEditorState.value, changesEditorState.value);
   }
 
   return (
@@ -191,7 +190,7 @@ export function SyncPage() {
 
           <Box flex={1} position="relative">
             <Box position="absolute" inset={0} overflow="auto" id="sync-output-box">
-              <CodeBlock lang="json" code={targetString} />
+              <OutputBox output={targetString} isLoading={syncExecuted} />
             </Box>
           </Box>
         </Flex>

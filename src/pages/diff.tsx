@@ -4,21 +4,17 @@ import { useMemo, useState } from "react";
 import { FormProvider, type SubmitHandler, useForm } from "react-hook-form";
 import { HiCheck } from "react-icons/hi2";
 import { useJsonEditorState } from "#/hooks/use-json-editor-state";
-import { useTimeoutedState } from "#/hooks/use-timeouted-state";
 import { type DiffOptions, jsonDiff } from "#/lib/json-diff";
-import { useNProgressBar } from "#/lib/nprogress";
 import { createRHFPersist } from "#/lib/rhf-persist";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
 import { JsonEditor } from "#/ui/app/json-editor";
 import { OptionsFieldset, type OptionsFormInputs } from "#/ui/app/options-fieldset";
+import { OutputBox } from "#/ui/app/output-box";
 import { SectionHeading } from "#/ui/app/section-heading";
-import { CodeBlock } from "#/ui/core/code-block";
 import * as Select from "#/ui/core/select";
 import { toaster } from "#/ui/toaster";
 import { texts } from "#/ui/wording";
 import { fromJSON, toJSON } from "#/utils/json-functions";
-
-const LOADING_TIMEOUTED_IN_MILLIS = 700;
 
 const { useRHFRestore, RHFPersist } = createRHFPersist<OptionsFormInputs>({ persistKey: "diff_form_options" });
 
@@ -60,12 +56,7 @@ function getDiffString(sourceString: string, targetString: string, options: Diff
 }
 
 export function DiffPage() {
-  const nProgressBar = useNProgressBar({
-    parent: "#diff-output-box",
-    delayedTimeout: LOADING_TIMEOUTED_IN_MILLIS,
-  });
-
-  const [diffExecuted, setDiffExecuted] = useTimeoutedState(false, LOADING_TIMEOUTED_IN_MILLIS);
+  const [diffExecuted, setDiffExecuted] = useState(false);
 
   const [selectedSamplesId, setSelectedSamplesId] = useLocalStorage<string[]>("diff_selected_samples", [SAMPLE_ID.SIMPLE]);
 
@@ -94,7 +85,6 @@ export function DiffPage() {
   const optionsForm = useForm<OptionsFormInputs>({
     disabled: !enabledDiffOptions,
     defaultValues: defaultValues,
-    // shouldUseNativeValidation: true,
   });
 
   const [changesString, setChangesString] = useState(() => {
@@ -109,12 +99,24 @@ export function DiffPage() {
     setChangesString(getDiffString(sourceString, targetString, options));
   }
 
+  async function executeDiffAsync(sourceString: string, targetString: string, options: DiffOptions | undefined) {
+    try {
+      setDiffExecuted(true);
+      await new Promise((resolve) => setTimeout(resolve, 100)); // simulate async operation
+      executeDiff(sourceString, targetString, options);
+    } catch (error) {
+      console.error("Can't execute diff successfully", error);
+    } finally {
+      setDiffExecuted(false);
+    }
+  }
+
   function onEditorChange(editorState: ReturnType<typeof useJsonEditorState>, value: string | undefined) {
     editorState.setValue(value ?? "");
     setSelectedSamplesId([]);
   }
 
-  function onSampleSelectionChange(selection: string[]) {
+  async function onSampleSelectionChange(selection: string[]) {
     setSelectedSamplesId(selection);
 
     const selectedSample = samples[selection[0] as SampleId];
@@ -123,8 +125,6 @@ export function DiffPage() {
     sourceEditorState.setValue(sourceString);
     targetEditorState.setValue(targetString);
 
-    executeDiff(sourceString, targetString, diffOptions);
-
     if (diffOptions) {
       optionsForm.reset(convertToOptionsFormInputs(diffOptions));
       setEnableDiffOptions(true);
@@ -132,9 +132,11 @@ export function DiffPage() {
       optionsForm.reset(getDefaultOptionsFormInputs());
       setEnableDiffOptions(false);
     }
+
+    await executeDiffAsync(sourceString, targetString, diffOptions);
   }
 
-  const onExecuteIntent: SubmitHandler<OptionsFormInputs> = (formInputs) => {
+  const onExecuteIntent: SubmitHandler<OptionsFormInputs> = async (formInputs) => {
     const diffOptions = convertToDiffOptions(formInputs);
 
     if (!sourceEditorState.isValid) {
@@ -155,11 +157,7 @@ export function DiffPage() {
       return;
     }
 
-    executeDiff(sourceEditorState.value, targetEditorState.value, diffOptions);
-
-    setDiffExecuted(true);
-
-    nProgressBar.delayed();
+    await executeDiffAsync(sourceEditorState.value, targetEditorState.value, diffOptions);
   };
 
   return (
@@ -247,7 +245,7 @@ export function DiffPage() {
 
           <Box flex={1} position="relative">
             <Box position="absolute" inset={0} overflow="auto" id="diff-output-box">
-              <CodeBlock lang="json" code={changesString} />
+              <OutputBox output={changesString} isLoading={diffExecuted} />
             </Box>
           </Box>
         </Flex>

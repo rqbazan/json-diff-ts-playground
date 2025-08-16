@@ -7,7 +7,7 @@ export type UseNProgressBarOptions = {
   delayedTimeout?: number;
 };
 
-export function useNProgressBar({ parent, delayedTimeout }: UseNProgressBarOptions) {
+export function useNProgressBar({ parent }: UseNProgressBarOptions) {
   useEffect(() => {
     nProgress.configure({
       parent,
@@ -15,12 +15,5 @@ export function useNProgressBar({ parent, delayedTimeout }: UseNProgressBarOptio
     });
   }, [parent]);
 
-  return {
-    start: () => nProgress.start(),
-    done: () => nProgress.done(),
-    delayed: (timeout?: number) => {
-      nProgress.start();
-      setTimeout(() => nProgress.done(), timeout ?? delayedTimeout ?? 700);
-    },
-  };
+  return nProgress;
 }
