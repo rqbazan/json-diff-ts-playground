@@ -10,7 +10,7 @@ export type OutputBoxProps = {
 
 export function OutputBox({ output, isLoading }: OutputBoxProps) {
   const nProgressBar = useNProgressBar({
-    parent: "#diff-output-box",
+    parent: "#nprogress-container",
   });
 
   useEffect(() => {
@@ -22,7 +22,8 @@ export function OutputBox({ output, isLoading }: OutputBoxProps) {
   }, [isLoading, nProgressBar]);
 
   return (
-    <Box id="diff-output-box">
+    <Box>
+      <Box id="nprogress-container" h="2px" position="sticky" top={0} w="full" />
       <CodeBlock lang="json" code={output} />
     </Box>
   );

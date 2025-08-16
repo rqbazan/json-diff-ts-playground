@@ -1,17 +1,17 @@
-import "nprogress/nprogress.css";
+import "./style.css";
 import nProgress from "nprogress";
 import { useEffect } from "react";
 
 export type UseNProgressBarOptions = {
   parent?: string;
-  delayedTimeout?: number;
 };
 
 export function useNProgressBar({ parent }: UseNProgressBarOptions) {
   useEffect(() => {
     nProgress.configure({
       parent,
-      showSpinner: false,
+      // @ts-expect-error untyped option
+      prepend: true,
     });
   }, [parent]);
 

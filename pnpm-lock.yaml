@@ -51,8 +51,8 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       nprogress:
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: npm:@rqbazan/nprogress
+        version: '@rqbazan/nprogress@0.0.1'
       react:
         specifier: ^19.1.0
         version: 19.1.1
@@ -1178,6 +1178,9 @@ packages:
     resolution: {integrity: sha512-CvUo2ixeIQGtF6WvuB87XWqPQkoFAFqW+HUo/WzHwuHDvIwZCtjdWXoYCcr06iKGydiqTclC4jU/TNObC/xKZg==}
     cpu: [x64]
     os: [win32]
+
+  '@rqbazan/nprogress@0.0.1':
+    resolution: {integrity: sha512-D6DQMNFtWII3IWDfPYBzLlNv/EVZ6Mh+Syb6HQXWfznkrBIeN4tIL3kux9eDKKBLkRAjerUB90S2cvBoLoLNbg==}
 
   '@rushstack/worker-pool@0.4.9':
     resolution: {integrity: sha512-ibAOeQCuz3g0c88GGawAPO2LVOTZE3uPh4DCEJILZS9SEv9opEUObsovC18EHPgeIuFy4HkoJT+t7l8LURZjIw==}
@@ -2627,9 +2630,6 @@ packages:
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
     engines: {node: '>=8'}
-
-  nprogress@0.2.0:
-    resolution: {integrity: sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==}
 
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
@@ -5059,6 +5059,8 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.46.2':
     optional: true
 
+  '@rqbazan/nprogress@0.0.1': {}
+
   '@rushstack/worker-pool@0.4.9(@types/node@24.2.1)':
     optionalDependencies:
       '@types/node': 24.2.1
@@ -6836,8 +6838,6 @@ snapshots:
   npm-run-path@4.0.1:
     dependencies:
       path-key: 3.1.1
-
-  nprogress@0.2.0: {}
 
   object-assign@4.1.1: {}
 
