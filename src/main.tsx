@@ -3,9 +3,9 @@ import { ChakraProvider, ClientOnly } from "@chakra-ui/react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./app";
-import { ColorModeProvider } from "./ui/components/color-mode";
-import { ToasterRoot } from "./ui/components/toaster-root";
+import { ColorModeProvider } from "./ui/core/color-mode";
 import { system } from "./ui/core/system";
+import { ToasterRoot } from "./ui/core/toaster-root";
 
 // biome-ignore lint/style/noNonNullAssertion: index.html always has the root
 const rootEl = document.getElementById("root")!;

@@ -2,7 +2,7 @@ import { Box, Skeleton } from "@chakra-ui/react";
 import { Editor, type EditorProps } from "@monaco-editor/react";
 import merge from "lodash.merge";
 import { fontMono } from "#/ui/core/system";
-import { useColorModeValue } from "./color-mode";
+import { useColorModeValue } from "../core/color-mode";
 
 const DEFAULT_OPTIONS = {
   minimap: { enabled: false },

@@ -9,14 +9,14 @@ import { type DiffOptions, jsonDiff } from "#/lib/json-diff";
 import { useNProgressBar } from "#/lib/nprogress";
 import { createRHFPersist } from "#/lib/rhf-persist";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
-import { CodeBlock } from "#/ui/components/code-block";
-import { JsonEditor } from "#/ui/components/json-editor";
-import { SectionHeading } from "#/ui/components/section-heading";
-import * as Select from "#/ui/components/select";
-import { toaster } from "#/ui/components/toaster";
+import { JsonEditor } from "#/ui/app/json-editor";
+import { OptionsFieldset, type OptionsFormInputs } from "#/ui/app/options-fieldset";
+import { SectionHeading } from "#/ui/app/section-heading";
+import { CodeBlock } from "#/ui/core/code-block";
+import * as Select from "#/ui/core/select";
+import { toaster } from "#/ui/toaster";
 import { texts } from "#/ui/wording";
 import { fromJSON, toJSON } from "#/utils/json-functions";
-import { OptionsFieldset, type OptionsFormInputs } from "./options-fieldset";
 
 const LOADING_TIMEOUTED_IN_MILLIS = 700;
 
