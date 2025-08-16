@@ -189,7 +189,7 @@ export function SyncPage() {
           <SectionHeading title={texts["diff.target.title"]} description={texts["diff.target.description"]} />
 
           <Box flex={1} position="relative">
-            <Box position="absolute" inset={0} overflow="auto" id="sync-output-box">
+            <Box position="absolute" inset={0} overflow="auto">
               <OutputBox output={targetString} isLoading={syncExecuted} />
             </Box>
           </Box>

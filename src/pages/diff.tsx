@@ -244,7 +244,7 @@ export function DiffPage() {
           <SectionHeading title={texts["diff.output.title"]} description={texts["diff.output.description"]} />
 
           <Box flex={1} position="relative">
-            <Box position="absolute" inset={0} overflow="auto" id="diff-output-box">
+            <Box position="absolute" inset={0} overflow="auto">
               <OutputBox output={changesString} isLoading={diffExecuted} />
             </Box>
           </Box>

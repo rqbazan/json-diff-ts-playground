@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useNProgressBar } from "#/lib/nprogress";
+import { useEffect, useRef } from "react";
+import { type NProgress, NProgressBar } from "#/lib/nprogress";
 import { CodeBlock } from "#/ui/core/code-block";
 
 export type OutputBoxProps = {
@@ -9,20 +9,19 @@ export type OutputBoxProps = {
 };
 
 export function OutputBox({ output, isLoading }: OutputBoxProps) {
-  const nProgressBar = useNProgressBar({
-    parent: "#diff-output-box",
-  });
+  const nProgressRef = useRef<NProgress>(null);
 
   useEffect(() => {
     if (isLoading) {
-      nProgressBar.start();
+      nProgressRef.current?.start();
     } else {
-      nProgressBar.done();
+      nProgressRef.current?.done();
     }
-  }, [isLoading, nProgressBar]);
+  }, [isLoading]);
 
   return (
-    <Box id="diff-output-box">
+    <Box>
+      <NProgressBar ref={nProgressRef} />
       <CodeBlock lang="json" code={output} />
     </Box>
   );
