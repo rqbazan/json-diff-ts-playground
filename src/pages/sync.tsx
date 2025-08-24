@@ -7,6 +7,7 @@ import { jsonDiff, jsonSync } from "#/lib/json-diff";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
 import { JsonEditor } from "#/ui/app/json-editor";
 import { OutputBox } from "#/ui/app/output-box";
+import { PanelsLayout } from "#/ui/app/panels-layout";
 import { SectionHeading } from "#/ui/app/section-heading";
 import * as Select from "#/ui/core/select";
 import { toaster } from "#/ui/toaster";
@@ -118,9 +119,10 @@ export function SyncPage() {
   }
 
   return (
-    <Flex direction="column" flex={1}>
-      <Flex flex={1}>
-        <Flex direction="column" h="full" w="50%">
+    <PanelsLayout
+      autoSavePreffixId="sync-page"
+      topLeftContent={
+        <Flex direction="column" h="full">
           <SectionHeading title={texts["diff.source.title"]} description={texts["diff.source.description"]} />
           <JsonEditor
             value={sourceEditorState.value}
@@ -128,10 +130,9 @@ export function SyncPage() {
             onValidate={(markers) => sourceEditorState.setIsValid(markers.length === 0)}
           />
         </Flex>
-
-        <Separator orientation="vertical" size="md" />
-
-        <Flex direction="column" h="full" w="50%">
+      }
+      topRightContent={
+        <Flex direction="column" h="full">
           <SectionHeading title={texts["sync.changes.title"]} description={texts["sync.changes.description"]} />
           <JsonEditor
             value={changesEditorState.value}
@@ -139,12 +140,9 @@ export function SyncPage() {
             onValidate={(markers) => sourceEditorState.setIsValid(markers.length === 0)}
           />
         </Flex>
-      </Flex>
-
-      <Separator size="md" />
-
-      <Flex flex={1}>
-        <Flex direction="column" h="full" w="30%" borderRight="2px" borderColor="gray.800">
+      }
+      bottomLeftContent={
+        <Flex direction="column" h="full">
           <SectionHeading title={texts["sync.config.title"]} description={texts["sync.config.description"]} />
           <Stack flex={1}>
             <Stack p={3} flex={1}>
@@ -182,10 +180,9 @@ export function SyncPage() {
             </Stack>
           </Stack>
         </Flex>
-
-        <Separator orientation="vertical" size="md" />
-
-        <Flex direction="column" h="full" w="70%">
+      }
+      bottomRightContent={
+        <Flex direction="column" h="full">
           <SectionHeading title={texts["diff.target.title"]} description={texts["diff.target.description"]} />
 
           <Box flex={1} position="relative">
@@ -194,7 +191,7 @@ export function SyncPage() {
             </Box>
           </Box>
         </Flex>
-      </Flex>
-    </Flex>
+      }
+    />
   );
 }

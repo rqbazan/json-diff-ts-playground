@@ -36,8 +36,8 @@ importers:
         specifier: ^0.0.3
         version: 0.0.3(@biomejs/biome@2.1.4)
       '@vlandoss/run-run':
-        specifier: 0.0.6
-        version: 0.0.6(@pnpm/logger@1001.0.0)(@pnpm/worker@1000.1.11(@pnpm/logger@1001.0.0)(@types/node@24.2.1))(typanion@3.14.0)
+        specifier: ^0.0.9
+        version: 0.0.9(@pnpm/logger@1001.0.0)(@pnpm/worker@1000.1.11(@pnpm/logger@1001.0.0)(@types/node@24.2.1))(typanion@3.14.0)
       json-diff-ts:
         specifier: ^4.8.2
         version: 4.8.2
@@ -65,6 +65,9 @@ importers:
       react-icons:
         specifier: ^5.5.0
         version: 5.5.0(react@19.1.1)
+      react-resizable-panels:
+        specifier: ^3.0.5
+        version: 3.0.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       react-router:
         specifier: ^7.7.1
         version: 7.8.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1317,8 +1320,8 @@ packages:
     resolution: {integrity: sha512-c/b1+Vl9CXT4WTryTAF2FsaXrTKLMu9e2bIHbCExc4uHGhbpzJqRKR03RR1SlQP55b7NAu14fH6RKD/Yecw5Cw==}
     engines: {bun: '>=1.0.0'}
 
-  '@vlandoss/run-run@0.0.6':
-    resolution: {integrity: sha512-AAHEUEwNGwUaqIHeULvk5NqClj6ceKk/2CzMfTcVHi2RW9eRr9akOCknigtPJiaDwysPKiYQb1cU6a1E/RB6Zw==}
+  '@vlandoss/run-run@0.0.9':
+    resolution: {integrity: sha512-2/m8yM7l74zJGgXZ923I3qkloj9xSWn3cy6xTNW8NSTjb9Xj7iTzvA4MZhqjsH3h1V1evvMcqIcMufIj5zIWEQ==}
     engines: {bun: '>=1.0.0'}
     hasBin: true
 
@@ -2898,6 +2901,12 @@ packages:
   react-refresh@0.17.0:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
+
+  react-resizable-panels@3.0.5:
+    resolution: {integrity: sha512-3z1yN25DMTXLg2wfyFrW32r5k4WEcUa3F7cJ2EgtNK07lnOs4mpM8yWLGunCpkhcQRwJX4fqoLcIh/pHPxzlmQ==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   react-router@7.8.0:
     resolution: {integrity: sha512-r15M3+LHKgM4SOapNmsH3smAizWds1vJ0Z9C4mWaKnT9/wD7+d/0jYcj6LmOvonkrO4Rgdyp4KQ/29gWN2i1eg==}
@@ -5221,7 +5230,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vlandoss/run-run@0.0.6(@pnpm/logger@1001.0.0)(@pnpm/worker@1000.1.11(@pnpm/logger@1001.0.0)(@types/node@24.2.1))(typanion@3.14.0)':
+  '@vlandoss/run-run@0.0.9(@pnpm/logger@1001.0.0)(@pnpm/worker@1000.1.11(@pnpm/logger@1001.0.0)(@types/node@24.2.1))(typanion@3.14.0)':
     dependencies:
       '@biomejs/biome': 2.1.4
       '@vlandoss/clibuddy': 0.0.4(@pnpm/logger@1001.0.0)(@pnpm/worker@1000.1.11(@pnpm/logger@1001.0.0)(@types/node@24.2.1))(typanion@3.14.0)
@@ -7059,6 +7068,11 @@ snapshots:
   react-is@16.13.1: {}
 
   react-refresh@0.17.0: {}
+
+  react-resizable-panels@3.0.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+    dependencies:
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
 
   react-router@7.8.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
