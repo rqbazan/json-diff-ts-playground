@@ -23,11 +23,4 @@ jobs:
         uses: variableland/gh-actions/actions/setup-pnpm-bun@main
 
       - name: 💅 Test static
-        run: |
-          pnpm rr check
-          pnpm rr tsc
-
-      # - name: 🧪 Test unit
-      #   run: bun run test
-
-  
+        run: pnpm rr check tsc
