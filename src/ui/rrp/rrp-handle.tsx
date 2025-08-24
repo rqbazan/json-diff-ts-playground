@@ -3,7 +3,7 @@ import { PanelResizeHandle } from "react-resizable-panels";
 
 export function RRPHandle(props: SeparatorProps) {
   return (
-    <Separator size="lg" {...props} asChild>
+    <Separator size="md" {...props} asChild>
       <PanelResizeHandle />
     </Separator>
   );
