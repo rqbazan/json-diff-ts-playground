@@ -7,7 +7,7 @@ import { RHFTabularInput } from "#/ui/rhf/rhf-tabular-input";
 
 export type OptionsFieldsetProps = {
   enabled: boolean;
-  onEnabledChange: (enabled: boolean) => void;
+  onEnabledChange?: (enabled: boolean) => void;
 };
 
 export type OptionsFormInputs = {
@@ -36,7 +36,7 @@ export function OptionsFieldset({ enabled, onEnabledChange }: OptionsFieldsetPro
           </Fieldset.HelperText>
         </Stack>
         <Stack ml="auto">
-          <Switch checked={enabled} onCheckedChange={(e) => onEnabledChange(e.checked)} />
+          <Switch checked={enabled} onCheckedChange={(e) => onEnabledChange?.(e.checked)} />
         </Stack>
       </HStack>
 

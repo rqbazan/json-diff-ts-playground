@@ -2,9 +2,8 @@ import { Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { FormProvider, type SubmitHandler, useForm } from "react-hook-form";
-import { HiCheck } from "react-icons/hi2";
 import { useJsonEditorState } from "#/hooks/use-json-editor-state";
-import { type DiffOptions, jsonDiff } from "#/lib/json-diff";
+import type { DiffOptions } from "#/lib/json-diff";
 import { createRHFPersist } from "#/lib/rhf-persist";
 import { SAMPLE_ID, type SampleId, sampleCollection, samples } from "#/samples";
 import { JsonEditor } from "#/ui/app/json-editor";
@@ -15,33 +14,15 @@ import { SectionHeading } from "#/ui/app/section-heading";
 import * as Select from "#/ui/core/select";
 import { toaster } from "#/ui/toaster";
 import { texts } from "#/ui/wording";
-import { fromJSON, toJSON } from "#/utils/json-functions";
+import {
+  convertToDiffOptions,
+  convertToOptionsFormInputs,
+  type DiffOrSyncInput,
+  getDefaultOptionsFormInputs,
+  getDiffString,
+} from "#/utils/diff-sync";
 
 const { useRHFRestore, RHFPersist } = createRHFPersist<OptionsFormInputs>({ persistKey: "diff_form_options" });
-
-function convertToDiffOptions(formInputs: OptionsFormInputs): DiffOptions {
-  return {
-    keysToSkip: formInputs.keysToSkip?.map((item) => item.value) ?? [],
-    embeddedObjKeys: Object.fromEntries(formInputs.embeddedObjKeys?.map((item) => [item.key, item.id]) ?? []),
-    treatTypeChangeAsReplace: formInputs.treatTypeChangeAsReplace ?? false,
-  };
-}
-
-function convertToOptionsFormInputs(options: DiffOptions): OptionsFormInputs {
-  return {
-    keysToSkip: options.keysToSkip?.map((item) => ({ value: item })) ?? [],
-    embeddedObjKeys: Object.entries(options.embeddedObjKeys ?? []).map(([key, id]) => ({ key, id })),
-    treatTypeChangeAsReplace: options.treatTypeChangeAsReplace ?? false,
-  };
-}
-
-function getDefaultOptionsFormInputs(): OptionsFormInputs {
-  return {
-    keysToSkip: [],
-    embeddedObjKeys: [],
-    treatTypeChangeAsReplace: false,
-  };
-}
 
 function hasRestoredValues(values: Record<string, unknown>): boolean {
   const keysToSkip = values.keysToSkip as string[] | undefined;
@@ -49,11 +30,6 @@ function hasRestoredValues(values: Record<string, unknown>): boolean {
   const treatTypeChangeAsReplace = values.treatTypeChangeAsReplace as boolean | undefined;
 
   return treatTypeChangeAsReplace !== undefined || (keysToSkip?.length ?? 0) > 0 || Object.keys(embeddedObjKeys ?? {}).length > 0;
-}
-
-function getDiffString(sourceString: string, targetString: string, options: DiffOptions | undefined) {
-  const diff = jsonDiff(fromJSON(sourceString), fromJSON(targetString), options);
-  return toJSON(diff);
 }
 
 export function DiffPage() {
@@ -83,9 +59,9 @@ export function DiffPage() {
       ? restoredValues
       : getDefaultOptionsFormInputs();
 
-  const optionsForm = useForm<OptionsFormInputs>({
+  const form = useForm<OptionsFormInputs>({
     disabled: !enabledDiffOptions,
-    defaultValues: defaultValues,
+    defaultValues,
   });
 
   const [changesString, setChangesString] = useState(() => {
@@ -96,15 +72,25 @@ export function DiffPage() {
     );
   });
 
-  function executeDiff(sourceString: string, targetString: string, options: DiffOptions | undefined) {
-    setChangesString(getDiffString(sourceString, targetString, options));
+  function executeDiff(source: DiffOrSyncInput, target: DiffOrSyncInput, options: DiffOptions | undefined) {
+    try {
+      setChangesString(getDiffString(source, target, options));
+    } catch (error) {
+      console.error("Error executing diff:", error);
+
+      toaster.create({
+        title: "Diff Error",
+        type: "error",
+        description: "An error occurred while executing the diff.",
+      });
+    }
   }
 
-  async function executeDiffAsync(sourceString: string, targetString: string, options: DiffOptions | undefined) {
+  async function executeDiffAsync(source: DiffOrSyncInput, target: DiffOrSyncInput, options: DiffOptions | undefined) {
     try {
       setDiffExecuted(true);
       await new Promise((resolve) => setTimeout(resolve, 100)); // simulate async operation
-      executeDiff(sourceString, targetString, options);
+      executeDiff(source, target, options);
     } catch (error) {
       console.error("Can't execute diff successfully", error);
     } finally {
@@ -121,20 +107,20 @@ export function DiffPage() {
     setSelectedSamplesId(selection);
 
     const selectedSample = samples[selection[0] as SampleId];
-    const { sourceString, targetString, diffOptions } = selectedSample;
+    const { source, target, sourceString, targetString, diffOptions } = selectedSample;
 
     sourceEditorState.setValue(sourceString);
     targetEditorState.setValue(targetString);
 
     if (diffOptions) {
-      optionsForm.reset(convertToOptionsFormInputs(diffOptions));
+      form.reset(convertToOptionsFormInputs(diffOptions));
       setEnableDiffOptions(true);
     } else {
-      optionsForm.reset(getDefaultOptionsFormInputs());
+      form.reset(getDefaultOptionsFormInputs());
       setEnableDiffOptions(false);
     }
 
-    await executeDiffAsync(sourceString, targetString, diffOptions);
+    await executeDiffAsync(source, target, diffOptions);
   }
 
   const onExecuteIntent: SubmitHandler<OptionsFormInputs> = async (formInputs) => {
@@ -211,8 +197,8 @@ export function DiffPage() {
 
               <Separator />
 
-              <FormProvider {...optionsForm}>
-                <form id="diff-options-form" onSubmit={optionsForm.handleSubmit(onExecuteIntent)}>
+              <FormProvider {...form}>
+                <form id="diff-options-form" onSubmit={form.handleSubmit(onExecuteIntent)}>
                   <OptionsFieldset enabled={enabledDiffOptions} onEnabledChange={setEnableDiffOptions} />
                   <RHFPersist />
                 </form>
@@ -230,8 +216,9 @@ export function DiffPage() {
               bgColor="green.400"
               color="black"
               _dark={{ bgColor: "blue.700", color: "white" }}
+              _hover={{ bgColor: "green.500", _dark: { bgColor: "blue.800" } }}
             >
-              {diffExecuted && <HiCheck />} Execute Diff
+              Execute Diff
             </Button>
           </Stack>
         </Flex>
