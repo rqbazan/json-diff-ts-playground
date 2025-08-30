@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
+import { Alert, Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -52,6 +52,11 @@ export function SyncPage() {
     }
   });
 
+  const [enabledDiffOptions, setEnableDiffOptions] = useLocalStorage<boolean>(
+    "sync_enabled_options",
+    initialSample?.diffOptions !== undefined,
+  );
+
   const defaultValues = initialSample?.diffOptions
     ? convertToOptionsFormInputs(initialSample.diffOptions)
     : getDefaultOptionsFormInputs();
@@ -102,6 +107,14 @@ export function SyncPage() {
 
     sourceEditorState.setValue(sourceString);
     changesEditorState.setValue(toJSON(changes));
+
+    if (diffOptions) {
+      form.reset(convertToOptionsFormInputs(diffOptions));
+      setEnableDiffOptions(true);
+    } else {
+      form.reset(getDefaultOptionsFormInputs());
+      setEnableDiffOptions(false);
+    }
 
     await executeSyncAsync(source, changes);
   }
@@ -176,11 +189,14 @@ export function SyncPage() {
                 </Select.SelectContent>
               </Select.SelectRoot>
 
-              <Separator />
-
-              <FormProvider {...form}>
-                <OptionsFieldset enabled={false} />
-              </FormProvider>
+              {enabledDiffOptions && (
+                <>
+                  <Separator />
+                  <FormProvider {...form}>
+                    <OptionsFieldset readonly />
+                  </FormProvider>
+                </>
+              )}
             </Box>
           </Box>
 
