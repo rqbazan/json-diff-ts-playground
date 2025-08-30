@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
+import { Box, Button, Flex, Separator, Stack } from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
