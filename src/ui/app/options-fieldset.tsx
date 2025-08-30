@@ -1,4 +1,4 @@
-import { Field, Fieldset, HStack, IconButton, Stack } from "@chakra-ui/react";
+import { Field, Fieldset, HStack, IconButton, Stack, Text } from "@chakra-ui/react";
 import { LuInfo } from "react-icons/lu";
 import { Switch } from "#/ui/core/switch";
 import { RHFMultiInput } from "#/ui/rhf/rhf-multi-input";
@@ -6,8 +6,9 @@ import { RHFSwitch } from "#/ui/rhf/rhf-switch";
 import { RHFTabularInput } from "#/ui/rhf/rhf-tabular-input";
 
 export type OptionsFieldsetProps = {
-  enabled: boolean;
-  onEnabledChange: (enabled: boolean) => void;
+  enabled?: boolean;
+  readonly?: boolean;
+  onEnabledChange?: (enabled: boolean) => void;
 };
 
 export type OptionsFormInputs = {
@@ -16,12 +17,20 @@ export type OptionsFormInputs = {
   treatTypeChangeAsReplace?: boolean;
 };
 
-export function OptionsFieldset({ enabled, onEnabledChange }: OptionsFieldsetProps) {
+export function OptionsFieldset({ readonly, enabled, onEnabledChange }: OptionsFieldsetProps) {
   return (
     <Fieldset.Root p={3} size="lg">
       <HStack w="full">
         <Stack gap={0}>
-          <Fieldset.Legend>Options</Fieldset.Legend>
+          <Fieldset.Legend>
+            Options
+            {readonly ? (
+              <Text textStyle="xs" display="inline" as="sup">
+                {" "}
+                (readonly)
+              </Text>
+            ) : null}
+          </Fieldset.Legend>
           <Fieldset.HelperText display="flex" gap={1} alignItems="center">
             Diff algorithm options
             <IconButton asChild variant="ghost" size="2xs" rounded="full">
@@ -36,7 +45,7 @@ export function OptionsFieldset({ enabled, onEnabledChange }: OptionsFieldsetPro
           </Fieldset.HelperText>
         </Stack>
         <Stack ml="auto">
-          <Switch checked={enabled} onCheckedChange={(e) => onEnabledChange(e.checked)} />
+          <Switch disabled={readonly} checked={enabled} onCheckedChange={(e) => onEnabledChange?.(e.checked)} />
         </Stack>
       </HStack>
 
